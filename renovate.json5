@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommitsDisabled",
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "argoproj/argo-cd",
+      "fileMatch": ["Dockerfile"],
+      "matchStrings": [
+        "https://github.com/argoproj/argo-cd/releases/download/(?<currentValue>.+)/argocd-linux-amd64",
+      ],
+    },
+  ],
+}
