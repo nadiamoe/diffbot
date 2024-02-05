@@ -16,4 +16,11 @@
       ],
     },
   ],
+ "packageRules": [
+    // Group all GitHub actions updates in the same PR.
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+    },
+  ],
 }
