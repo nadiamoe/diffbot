@@ -25,7 +25,7 @@ func main() {
 	var changedFiles []string
 	err := json.Unmarshal([]byte(changedFilesEnv), &changedFiles)
 	if err != nil {
-		log.Printf("Unmarshalling json from changed files env var: %v", err)
+		log.Fatalf("Unmarshalling json from changed files env var: %v", err)
 	}
 
 	if len(changedFiles) == 0 {
@@ -74,8 +74,7 @@ func main() {
 		comment,
 	)
 	if err != nil {
-		log.Printf("Error posting comment: %v", err)
-		return
+		log.Fatalf("Error posting comment: %v", err)
 	}
 }
 
