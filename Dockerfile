@@ -3,7 +3,7 @@ FROM golang:1.21-alpine as builder
 WORKDIR /diffbot
 
 COPY . .
-RUN go build -v -o /bin/diffbot .
+RUN go build -o /bin/diffbot .
 
 FROM alpine:3.19.1
 
