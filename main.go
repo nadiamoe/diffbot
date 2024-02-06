@@ -51,6 +51,12 @@ func main() {
 	log.Printf("Detected changes in: %s", strings.Join(changedApps, ", "))
 
 	commentBuf := &bytes.Buffer{}
+	fmt.Fprintf(
+		commentBuf,
+		"Diff generated on %s (%s)\n\n",
+		time.Now().Format(time.DateTime),
+		os.Getenv("CI_COMMIT_SHA"),
+	)
 
 	for _, changedApp := range changedApps {
 		log.Printf("Running argocd diff for %s", changedApp)
@@ -63,14 +69,13 @@ func main() {
 		fmt.Fprintf(commentBuf, "## Changes in `%s`\n\n```diff\n%s\n```\n\n", changedApp, strings.TrimSpace(diff))
 	}
 
-	comment := fmt.Sprintf("Diff generated on %v (%s)\n\n%s", time.Now(), os.Getenv("CI_COMMIT_SHA"), commentBuf.String())
 	err = gitea.PostOrUpdate(
 		os.Getenv("CI_FORGE_URL"),
 		os.Getenv("GITEA_TOKEN"),
 		os.Getenv("CI_REPO_OWNER"),
 		os.Getenv("CI_REPO_NAME"),
 		os.Getenv("CI_COMMIT_PULL_REQUEST"),
-		comment,
+		commentBuf.String(),
 	)
 	if err != nil {
 		log.Fatalf("Error posting comment: %v", err)
