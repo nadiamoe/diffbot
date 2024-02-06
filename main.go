@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 	"time"
 
@@ -76,20 +75,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error posting comment: %v", err)
 	}
-}
-
-func gitChanged(base string) ([]string, error) {
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-
-	cmd := exec.Command("git", "diff", "--name-only", base)
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
-
-	err := cmd.Run()
-	if err != nil {
-		return nil, fmt.Errorf("running git diff: %w\n%s", err, stderr.String())
-	}
-
-	return strings.Split(stdout.String(), "\n"), nil
 }
