@@ -13,6 +13,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const maxLines = 200
+
 func Diff(appName string) (string, error) {
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
@@ -36,7 +38,16 @@ func Diff(appName string) (string, error) {
 		}
 	}
 
-	return stdout.String(), nil
+	stdoutString := stdout.String()
+	if strings.Count(stdoutString, "\n") <= maxLines {
+		return stdoutString, nil
+	}
+
+	output := &strings.Builder{}
+	_, _ = fmt.Fprintf(output, "# %d more lines truncated from output\n\n", len(stdoutString)-maxLines)
+	_, _ = output.WriteString(stdoutString)
+
+	return output.String(), nil
 }
 
 func Changed(applications []App, changedFiles []string) []string {
