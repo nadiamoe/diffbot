@@ -1,6 +1,6 @@
 module roob.re/diffbot
 
-go 1.22.0
+go 1.22.1
 
 require (
 	code.gitea.io/sdk/gitea v0.17.1
