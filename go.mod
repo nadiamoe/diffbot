@@ -3,7 +3,7 @@ module roob.re/diffbot
 go 1.22.2
 
 require (
-	code.gitea.io/sdk/gitea v0.18.0
+	code.gitea.io/sdk/gitea v0.19.0
 	github.com/google/go-cmp v0.6.0
 	gopkg.in/yaml.v3 v3.0.1
 )
