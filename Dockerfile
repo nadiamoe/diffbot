@@ -8,7 +8,7 @@ RUN wget -O argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/down
 COPY . .
 RUN go build -o /bin/diffbot .
 
-FROM alpine:3.20.2
+FROM alpine:3.20.3
 
 COPY --from=builder /bin/diffbot /usr/local/bin/
 COPY --from=builder /bin/argocd /usr/local/bin/
