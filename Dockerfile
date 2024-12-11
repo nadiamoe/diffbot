@@ -2,7 +2,7 @@ FROM golang:1.23-alpine as builder
 
 WORKDIR /diffbot
 
-RUN wget -O argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v2.13.1/argocd-linux-amd64 \
+RUN wget -O argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/v2.13.2/argocd-linux-amd64 \
     && install -m 555 argocd-linux-amd64 /bin/argocd
 
 COPY . .
