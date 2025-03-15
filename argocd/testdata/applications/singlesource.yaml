@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: singlesource
+  namespace: c-argocd
+spec:
+  destination:
+    namespace: singlesource
+    server: https://kubernetes.default.svc
+  project: nadia
+  source:
+    path: nadia/workloads/singlesource
+    repoURL: example.internal/k8s-secrets
+    targetRevision: main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    managedNamespaceMetadata:
+      labels:
+        owner: nadia

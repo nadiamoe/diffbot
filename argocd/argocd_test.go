@@ -1,7 +1,6 @@
 package argocd_test
 
 import (
-	"os"
 	"slices"
 	"testing"
 
@@ -10,12 +9,43 @@ import (
 )
 
 func Test_Applications(t *testing.T) {
-	path := os.Getenv("TEST_MANUAL_PATH")
-	if path == "" {
-		t.Skip("Skipping manual test as TEST_MANUAL_PATH is not defined")
+	apps, err := argocd.Applications("testdata/applications/")
+	if err != nil {
+		t.Fatalf("parsing applications: %v", err)
 	}
 
-	t.Log(argocd.Applications(path))
+	for _, tc := range []struct {
+		appName         string
+		expectedSources []string
+	}{
+		{
+			appName: "singlesource",
+			expectedSources: []string{
+				"nadia/workloads/singlesource",
+			},
+		},
+		{
+			appName:         "multisource",
+			expectedSources: []string{},
+		},
+	} {
+		appI := slices.IndexFunc(apps, func(app argocd.App) bool { return app.Name == tc.appName })
+		if appI == -1 {
+			t.Fatalf("%q app not found", tc.appName)
+		}
+
+		app := apps[appI]
+
+		if app.SrcPath == "" && len(tc.expectedSources) != 0 {
+			t.Fatalf("%q does not have the expected sources", tc.appName)
+		}
+
+		for _, expectedSource := range tc.expectedSources {
+			if app.SrcPath != expectedSource {
+				t.Fatalf("expected source %q not found in app", expectedSource)
+			}
+		}
+	}
 }
 
 func Test_Changed(t *testing.T) {
