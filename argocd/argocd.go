@@ -99,6 +99,9 @@ func Applications(root string) ([]App, error) {
 			return nil
 		}
 
+		type sourceSpec struct {
+			Path string
+		}
 		var app struct {
 			APIVersion string `yaml:"apiVersion"`
 			Kind       string
@@ -106,9 +109,8 @@ func Applications(root string) ([]App, error) {
 				Name string
 			}
 			Spec struct {
-				Source struct {
-					Path string
-				}
+				Source  sourceSpec
+				Sources []sourceSpec
 			}
 		}
 
@@ -132,8 +134,10 @@ func Applications(root string) ([]App, error) {
 		}
 
 		var paths []string
-		if app.Spec.Source.Path != "" {
-			paths = append(paths, app.Spec.Source.Path)
+		for _, src := range append(app.Spec.Sources, app.Spec.Source) {
+			if src.Path != "" {
+				paths = append(paths, src.Path)
+			}
 		}
 
 		apps = append(apps, App{
