@@ -60,10 +60,12 @@ appLoop:
 			// the application source path.
 			// We add the trailing slash to prevent too ensure we match files inside the srcPath *directory*, not having
 			// srcPath as a prefix: e.g. path "dir/foo2.yaml" being associated with a different app that has a source path of "dir/foo"
-			if file == app.OwnPath || strings.HasPrefix(file, strings.TrimSuffix(app.SrcPath, "/")+"/") {
-				log.Printf("file %q belongs to %q", file, app.Name)
-				changed[app.Name] = struct{}{}
-				continue appLoop
+			for _, srcPath := range app.SrcPaths {
+				if file == app.OwnPath || strings.HasPrefix(file, strings.TrimSuffix(srcPath, "/")+"/") {
+					log.Printf("file %q belongs to %q", file, app.Name)
+					changed[app.Name] = struct{}{}
+					continue appLoop
+				}
 			}
 		}
 	}
@@ -81,9 +83,9 @@ appLoop:
 }
 
 type App struct {
-	Name    string
-	SrcPath string
-	OwnPath string
+	Name     string
+	SrcPaths []string
+	OwnPath  string
 }
 
 func Applications(root string) ([]App, error) {
@@ -129,10 +131,15 @@ func Applications(root string) ([]App, error) {
 			return nil
 		}
 
+		var paths []string
+		if app.Spec.Source.Path != "" {
+			paths = append(paths, app.Spec.Source.Path)
+		}
+
 		apps = append(apps, App{
-			Name:    app.Metadata.Name,
-			SrcPath: app.Spec.Source.Path,
-			OwnPath: path,
+			Name:     app.Metadata.Name,
+			SrcPaths: paths,
+			OwnPath:  path,
 		})
 
 		return nil

@@ -26,7 +26,7 @@ func Test_Applications(t *testing.T) {
 		},
 		{
 			appName:         "multisource",
-			expectedSources: []string{},
+			expectedSources: nil,
 		},
 	} {
 		appI := slices.IndexFunc(apps, func(app argocd.App) bool { return app.Name == tc.appName })
@@ -36,13 +36,13 @@ func Test_Applications(t *testing.T) {
 
 		app := apps[appI]
 
-		if app.SrcPath == "" && len(tc.expectedSources) != 0 {
+		if len(app.SrcPaths) != len(tc.expectedSources) {
 			t.Fatalf("%q does not have the expected sources", tc.appName)
 		}
 
 		for _, expectedSource := range tc.expectedSources {
-			if app.SrcPath != expectedSource {
-				t.Fatalf("expected source %q not found in app", expectedSource)
+			if !slices.Contains(app.SrcPaths, expectedSource) {
+				t.Fatalf("expected source %q not found in sources %v", expectedSource, app.SrcPaths)
 			}
 		}
 	}
@@ -53,14 +53,14 @@ func Test_Changed(t *testing.T) {
 
 	apps := []argocd.App{
 		{
-			Name:    "test app",
-			OwnPath: "dir/testapp.yaml",
-			SrcPath: "dir/testapp",
+			Name:     "test app",
+			OwnPath:  "dir/testapp.yaml",
+			SrcPaths: []string{"dir/testapp"},
 		},
 		{
-			Name:    "test app 2",
-			OwnPath: "dir/testapp2.yaml",
-			SrcPath: "dir/testapp2",
+			Name:     "test app 2",
+			OwnPath:  "dir/testapp2.yaml",
+			SrcPaths: []string{"dir/testapp2"},
 		},
 	}
 	expectedApp := []string{"test app"}
@@ -105,14 +105,14 @@ func Test_Changed(t *testing.T) {
 			name: "does not confuse apps with common prefixes",
 			apps: []argocd.App{
 				{
-					Name:    "foo",
-					SrcPath: "foo",
-					OwnPath: "foo.yaml",
+					Name:     "foo",
+					SrcPaths: []string{"foo"},
+					OwnPath:  "foo.yaml",
 				},
 				{
-					Name:    "foo2",
-					SrcPath: "foo2",
-					OwnPath: "foo2.yaml",
+					Name:     "foo2",
+					SrcPaths: []string{"foo2"},
+					OwnPath:  "foo2.yaml",
 				},
 			},
 			files:    []string{"foo2.yaml"},
