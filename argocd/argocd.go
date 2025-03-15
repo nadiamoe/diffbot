@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -60,12 +61,14 @@ appLoop:
 			// the application source path.
 			// We add the trailing slash to prevent too ensure we match files inside the srcPath *directory*, not having
 			// srcPath as a prefix: e.g. path "dir/foo2.yaml" being associated with a different app that has a source path of "dir/foo"
-			for _, srcPath := range app.SrcPaths {
-				if file == app.OwnPath || strings.HasPrefix(file, strings.TrimSuffix(srcPath, "/")+"/") {
-					log.Printf("file %q belongs to %q", file, app.Name)
-					changed[app.Name] = struct{}{}
-					continue appLoop
-				}
+			sourceIncludesFile := func(appSource string) bool {
+				return strings.HasPrefix(file, strings.TrimSuffix(appSource, "/")+"/")
+			}
+
+			if file == app.OwnPath || slices.ContainsFunc(app.SrcPaths, sourceIncludesFile) {
+				log.Printf("file %q belongs to %q", file, app.Name)
+				changed[app.Name] = struct{}{}
+				continue appLoop
 			}
 		}
 	}
