@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"roob.re/diffbot/argocd"
+	"go.nadia.moe/diffbot/argocd"
 )
 
 func Test_Applications(t *testing.T) {

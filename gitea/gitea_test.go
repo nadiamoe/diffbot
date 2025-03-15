@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"roob.re/diffbot/gitea"
+	"go.nadia.moe/diffbot/gitea"
 )
 
 func Test_Manual(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"roob.re/diffbot/argocd"
-	"roob.re/diffbot/gitea"
+	"go.nadia.moe/diffbot/argocd"
+	"go.nadia.moe/diffbot/gitea"
 )
 
 func main() {

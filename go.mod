@@ -1,4 +1,4 @@
-module roob.re/diffbot
+module go.nadia.moe/diffbot
 
 go 1.22.2
 
