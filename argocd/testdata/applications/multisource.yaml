@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: multisource
+  namespace: argocd
+spec:
+  destination:
+    namespace: auth
+    name: in-cluster
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  sources:
+    - repoURL: example.internal/k8s-secrets
+      path: auth/manifests
+    - repoURL: example.internal/k8s-secrets
+      ref: secrets
+    - repoURL: example.internal/k8s
+      ref: values
+    - repoURL: example.internal/k8s-secrets
+      path: auth/somethingelse
