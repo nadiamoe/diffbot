@@ -25,8 +25,11 @@ func Test_Applications(t *testing.T) {
 			},
 		},
 		{
-			appName:         "multisource",
-			expectedSources: nil,
+			appName: "multisource",
+			expectedSources: []string{
+				"auth/manifests",
+				"auth/somethingelse",
+			},
 		},
 	} {
 		appI := slices.IndexFunc(apps, func(app argocd.App) bool { return app.Name == tc.appName })
@@ -37,7 +40,7 @@ func Test_Applications(t *testing.T) {
 		app := apps[appI]
 
 		if len(app.SrcPaths) != len(tc.expectedSources) {
-			t.Fatalf("%q does not have the expected sources", tc.appName)
+			t.Fatalf("%q does not have the expected sources %v", tc.appName, tc.expectedSources)
 		}
 
 		for _, expectedSource := range tc.expectedSources {
@@ -55,7 +58,7 @@ func Test_Changed(t *testing.T) {
 		{
 			Name:     "test app",
 			OwnPath:  "dir/testapp.yaml",
-			SrcPaths: []string{"dir/testapp"},
+			SrcPaths: []string{"dir/testapp", "dir/testapp-extra"},
 		},
 		{
 			Name:     "test app 2",
@@ -87,6 +90,12 @@ func Test_Changed(t *testing.T) {
 			name:     "file inside source dir changed",
 			apps:     apps,
 			files:    []string{"another/file", "dir/testapp/something"},
+			expected: expectedApp,
+		},
+		{
+			name:     "file inside another source dir changed",
+			apps:     apps,
+			files:    []string{"another/file", "dir/testapp-extra/something"},
 			expected: expectedApp,
 		},
 		{
