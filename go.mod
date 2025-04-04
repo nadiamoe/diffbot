@@ -3,7 +3,7 @@ module go.nadia.moe/diffbot
 go 1.22.2
 
 require (
-	code.gitea.io/sdk/gitea v0.20.0
+	code.gitea.io/sdk/gitea v0.21.0
 	github.com/google/go-cmp v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
