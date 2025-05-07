@@ -1,32 +1,33 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "github>nadiamoe/renovate-config",
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'github>nadiamoe/renovate-config',
   ],
-  "customManagers": [
+  customManagers: [
     {
-      "customType": "regex",
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "argoproj/argo-cd",
-      "fileMatch": ["Dockerfile"],
-      "matchStrings": [
-        "https://github.com/argoproj/argo-cd/releases/download/(?<currentValue>[^/]+)/",
+      customType: 'regex',
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'argoproj/argo-cd',
+      managerFilePatterns: [
+        '/Dockerfile/',
+      ],
+      matchStrings: [
+        'https://github.com/argoproj/argo-cd/releases/download/(?<currentValue>[^/]+)/',
       ],
     },
   ],
-  "packageRules": [
+  packageRules: [
     {
-      // Automerge argocd harmless versions.
-      "matchPackageNames": [
-        "argoproj/argo-cd",
+      matchPackageNames: [
+        'argoproj/argo-cd',
       ],
-      "matchUpdateTypes": [
-        "digest",
-        "pinDigest",
-        "patch",
-        "minor",
+      matchUpdateTypes: [
+        'digest',
+        'pinDigest',
+        'patch',
+        'minor',
       ],
-      "automerge": true,
+      automerge: true,
     },
   ],
 }
