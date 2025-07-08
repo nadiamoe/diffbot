@@ -2,7 +2,7 @@ module go.nadia.moe/diffbot
 
 go 1.23
 
-toolchain go1.24.4
+toolchain go1.24.5
 
 require (
 	code.gitea.io/sdk/gitea v0.21.0
