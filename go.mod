@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.25.1
 
 require (
-	code.gitea.io/sdk/gitea v0.22.0
+	code.gitea.io/sdk/gitea v0.22.1
 	github.com/google/go-cmp v0.7.0
 	gopkg.in/yaml.v3 v3.0.1
 )
