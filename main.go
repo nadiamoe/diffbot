@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	applications, err := argocd.Applications(".")
+	applications, err := argocd.Applications(".", nil)
 	if err != nil {
 		log.Fatalf("listing applications: %v", err)
 	}

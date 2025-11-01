@@ -91,7 +91,12 @@ type App struct {
 	OwnPath  string
 }
 
-func Applications(root string) ([]App, error) {
+// Applications walks the `root` directory and loads all paths referenced by  argoproj.io/v1alpha1/Application manifests
+// from yaml files found in that directory, recursively.
+// `filterRepo` can be used to leave out paths based on the `repoURL` field of each Application's `source`. It will be
+// called for each `source` using that `repoURL` as an argument, and the source will be included only if `filterRepo`
+// returns true. A nil `filterRepo` causes everything to be included.
+func Applications(root string, filterRepo func(string) bool) ([]App, error) {
 	var apps []App
 	fErr := filepath.WalkDir(root, func(path string, _ fs.DirEntry, err error) error {
 		if err != nil {
@@ -103,7 +108,8 @@ func Applications(root string) ([]App, error) {
 		}
 
 		type sourceSpec struct {
-			Path string
+			Path    string
+			RepoURL string `yaml:"repoURL"`
 		}
 		var app struct {
 			APIVersion string `yaml:"apiVersion"`
@@ -138,9 +144,20 @@ func Applications(root string) ([]App, error) {
 
 		var paths []string
 		for _, src := range append(app.Spec.Sources, app.Spec.Source) {
-			if src.Path != "" {
-				paths = append(paths, src.Path)
+			if filterRepo != nil && !filterRepo(src.RepoURL) {
+				continue
 			}
+
+			if src.Path == "" {
+				continue
+			}
+
+			paths = append(paths, src.Path)
+		}
+
+		if len(paths) == 0 {
+			// App has no sources, or no source matched filterRepo. Skip it.
+			return nil
 		}
 
 		apps = append(apps, App{

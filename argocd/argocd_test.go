@@ -9,46 +9,76 @@ import (
 )
 
 func Test_Applications(t *testing.T) {
-	apps, err := argocd.Applications("testdata/applications/")
-	if err != nil {
-		t.Fatalf("parsing applications: %v", err)
-	}
+	t.Parallel()
 
-	for _, tc := range []struct {
-		appName         string
-		expectedSources []string
-	}{
-		{
-			appName: "singlesource",
-			expectedSources: []string{
-				"nadia/workloads/singlesource",
-			},
-		},
-		{
-			appName: "multisource",
-			expectedSources: []string{
-				"auth/manifests",
-				"auth/somethingelse",
-			},
-		},
-	} {
-		appI := slices.IndexFunc(apps, func(app argocd.App) bool { return app.Name == tc.appName })
-		if appI == -1 {
-			t.Fatalf("%q app not found", tc.appName)
+	t.Run("source parsing", func(t *testing.T) {
+		t.Parallel()
+
+		apps, err := argocd.Applications("testdata/applications/", nil)
+		if err != nil {
+			t.Fatalf("parsing applications: %v", err)
 		}
 
-		app := apps[appI]
+		for _, tc := range []struct {
+			appName         string
+			expectedSources []string
+		}{
+			{
+				appName: "singlesource",
+				expectedSources: []string{
+					"nadia/workloads/singlesource",
+				},
+			},
+			{
+				appName: "differentrepo",
+				expectedSources: []string{
+					"nadia/workloads/differentrepo",
+				},
+			},
+			{
+				appName: "multisource",
+				expectedSources: []string{
+					"auth/manifests",
+					"auth/somethingelse",
+				},
+			},
+		} {
+			appI := slices.IndexFunc(apps, func(app argocd.App) bool { return app.Name == tc.appName })
+			if appI == -1 {
+				t.Fatalf("%q app not found", tc.appName)
+			}
 
-		if len(app.SrcPaths) != len(tc.expectedSources) {
-			t.Fatalf("%q does not have the expected sources %v", tc.appName, tc.expectedSources)
-		}
+			app := apps[appI]
 
-		for _, expectedSource := range tc.expectedSources {
-			if !slices.Contains(app.SrcPaths, expectedSource) {
-				t.Fatalf("expected source %q not found in sources %v", expectedSource, app.SrcPaths)
+			if len(app.SrcPaths) != len(tc.expectedSources) {
+				t.Fatalf("%q does not have the expected sources %v", tc.appName, tc.expectedSources)
+			}
+
+			for _, expectedSource := range tc.expectedSources {
+				if !slices.Contains(app.SrcPaths, expectedSource) {
+					t.Fatalf("expected source %q not found in sources %v", expectedSource, app.SrcPaths)
+				}
 			}
 		}
-	}
+	})
+
+	t.Run("repoUrl filter", func(t *testing.T) {
+		apps, err := argocd.Applications("testdata/applications/", func(repoUrl string) bool {
+			return repoUrl == "ssh://im-a-different-repo"
+		})
+		if err != nil {
+			t.Fatalf("parsing applications: %v", err)
+		}
+
+		if len(apps) != 1 {
+			t.Fatalf("Expected 1 app to match, got %d", len(apps))
+		}
+
+		app := apps[0]
+		if app.Name != "differentrepo" {
+			t.Fatalf("Unexpected app name %q", app.Name)
+		}
+	})
 }
 
 func Test_Changed(t *testing.T) {
