@@ -32,7 +32,14 @@ func main() {
 		return
 	}
 
-	applications, err := argocd.Applications(".", nil)
+	var repoFilter func(string) bool
+	if repoFilterEnv := os.Getenv("REPO_FILTER"); repoFilterEnv != "" {
+		repoFilter = func(s string) bool {
+			return s == repoFilterEnv
+		}
+	}
+
+	applications, err := argocd.Applications(".", repoFilter)
 	if err != nil {
 		log.Fatalf("listing applications: %v", err)
 	}
