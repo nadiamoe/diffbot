@@ -14,5 +14,5 @@ FROM alpine:3.24.3@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c
 
 ARG TARGETOS
 ARG TARGETARCH
-ADD --chmod=0555 https://github.com/argoproj/argo-cd/releases/download/v3.5.6/argocd-${TARGETOS}-${TARGETARCH} /usr/local/bin/argocd
+ADD --chmod=0555 https://github.com/argoproj/argo-cd/releases/download/v3.5.7/argocd-${TARGETOS}-${TARGETARCH} /usr/local/bin/argocd
 COPY --from=builder /bin/diffbot /usr/local/bin/
