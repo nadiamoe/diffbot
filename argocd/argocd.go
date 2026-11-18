@@ -25,7 +25,17 @@ func Diff(appName string) (string, error) {
 		return "", fmt.Errorf("getting absolute path of CWD: %w", err)
 	}
 
-	cmd := exec.Command("argocd", "app", "diff", "--server-side-generate", "--local", realpath, appName)
+	// The CLI's default --local-include leaves out packaged subcharts, so tgz archives are added here.
+	// The flag replaces the defaults, so they are repeated.
+	cmd := exec.Command("argocd", "app", "diff", "--server-side-generate", "--local", realpath,
+		"--local-include", "*.yaml",
+		"--local-include", "*.yml",
+		"--local-include", "*.json",
+		"--local-include", "*.tpl",
+		"--local-include", "Chart.lock",
+		"--local-include", "*.tgz",
+		"--local-include", "*.tar.gz",
+		appName)
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
 
